@@ -18,6 +18,7 @@ package com.example.android.dessertpusher
 
 import android.content.ActivityNotFoundException
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -28,6 +29,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleObserver
 import com.example.android.dessertpusher.databinding.ActivityMainBinding
 import timber.log.Timber
+
+const val KEY_REVENUE = "key_revenue"
+const val KEY_SOLD = "key_sold"
+const val KEY_TIMER = "key_timer"
+
 
 class MainActivity : AppCompatActivity(), LifecycleObserver {
 
@@ -79,7 +85,13 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
             onDessertClicked()
         }
 
-        dessertTimer = DessertTimer()
+        dessertTimer = DessertTimer(this.lifecycle)
+
+        if (savedInstanceState != null) {
+            revenue = savedInstanceState.getInt(KEY_REVENUE)
+            dessertsSold = savedInstanceState.getInt(KEY_SOLD)
+            dessertTimer.secondsCount = savedInstanceState.getInt(KEY_TIMER)
+        }
 
         // Set the TextViews to the right values
         binding.revenue = revenue
@@ -183,6 +195,14 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
     override fun onDestroy() {
         super.onDestroy()
         Timber.i("onDestroy called")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_REVENUE, revenue)
+        outState.putInt(KEY_SOLD, dessertsSold)
+        outState.putInt(KEY_TIMER, dessertTimer.secondsCount)
+        Timber.i("onSaveInstanceState called")
     }
 
     override fun onStop() {
