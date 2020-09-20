@@ -17,6 +17,7 @@
 package com.example.android.guesstheword.screens.game
 
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -52,22 +53,9 @@ class GameFragment : Fragment() {
         )
 
         Log.i("GameFragment", "ViewModelProviders.of called")
-        gameViewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
-
-        binding.correctButton.setOnClickListener {
-            gameViewModel.onCorrect()
-        }
-        binding.skipButton.setOnClickListener {
-            gameViewModel.onSkip()
-        }
-
-        gameViewModel.score.observe(viewLifecycleOwner, Observer {newScore ->
-            binding.scoreText.text = newScore.toString()
-        })
-
-        gameViewModel.word.observe(viewLifecycleOwner, Observer { newWord ->
-            binding.wordText.text = newWord
-        })
+        gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
+        binding.gameViewModel = gameViewModel
+        binding.lifecycleOwner = this
 
         gameViewModel.eventGameFinish.observe(viewLifecycleOwner, Observer { hasFinished ->
             if (hasFinished) {
